@@ -1,46 +1,47 @@
 #include <stdlib.h>
-#include <time.h>
 #include <iostream>
 #include <vector>
 #include <pthread.h>
 #include <unistd.h>
+#include <ctime>
 
 using namespace std;
-//vector<int> sum(26, 0), ini_bit;
-
 
 int main()
 {
-    //vector<int> B;
     int h_score = 0;
     int i, j;
-    int ini_bit[100]={0},B[100]={0};
-    //ini_bit.resize(50);
-    //B.resize(50);
-    //ini_bit = {0};
-    //ini_bit[99] = 1;
-    B[99] = 1;
+    clock_t start, stop;
+    int ini_bit[100] = {0};
     int n = 100, tmp;
-
+    start = clock();
+    
     while (h_score <= 50)
     {
         int carry = 0, score = 0;
 
-        for (i = n - 1; i >= 0; i--)
+        i=n-1;
+        tmp = ini_bit[i] ^ 1 ^ carry;
+        carry = (ini_bit[i] & 1) | (ini_bit[i] & carry) | (1 & carry);
+        ini_bit[i] = tmp;
+
+        for (i = n - 2; i >= 0; i--)
         {
-            tmp = ini_bit[i] ^ B[i] ^ carry;
-            carry = (ini_bit[i] & B[i]) | (ini_bit[i] & carry) | (B[i] & carry);
+            tmp = ini_bit[i] ^ 0 ^ carry;
+            carry = (ini_bit[i] & 0) | (ini_bit[i] & carry) | (0 & carry);
             ini_bit[i] = tmp;
         }
 
         for (i = 0; i < n; i++)
-            if (ini_bit[i] == 1)
-                score++;
+            score = ini_bit[i] & 1 ? score + 1 : score;
 
+        stop = clock();
         if (score > h_score)
         {
             h_score = score;
-            cout<<h_score<<endl;
+            cout << "highest score :" << h_score << endl;
+            cout << "execution time :" << (stop - start) / (double)(CLOCKS_PER_SEC) << endl
+                 << endl;
         }
     }
 
